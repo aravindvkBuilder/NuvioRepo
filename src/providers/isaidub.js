@@ -1,10 +1,530 @@
-/**
- * isaidub - Built from src/isaidub/
- * Generated: 2026-01-14T14:30:23.132Z
- */
-var C=Object.defineProperty,U=Object.defineProperties;var W=Object.getOwnPropertyDescriptors;var L=Object.getOwnPropertySymbols;var N=Object.prototype.hasOwnProperty,P=Object.prototype.propertyIsEnumerable;var E=(t,e,i)=>e in t?C(t,e,{enumerable:!0,configurable:!0,writable:!0,value:i}):t[e]=i,I=(t,e)=>{for(var i in e||(e={}))N.call(e,i)&&E(t,i,e[i]);if(L)for(var i of L(e))P.call(e,i)&&E(t,i,e[i]);return t},M=(t,e)=>U(t,W(e));var w=(t,e,i)=>new Promise((n,s)=>{var r=h=>{try{o(i.next(h))}catch(a){s(a)}},c=h=>{try{o(i.throw(h))}catch(a){s(a)}},o=h=>h.done?n(h.value):Promise.resolve(h.value).then(r,c);o((i=i.apply(t,e)).next())});var k=require("cheerio-without-node-native"),R="1b3113663c9004682ed61086cf967c44",z="https://api.themoviedb.org/3",b="https://isaidub.love",x={"User-Agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",Referer:`${b}/`};function v(n){return w(this,arguments,function*(t,e={},i=1e4){let s=new AbortController,r=setTimeout(()=>s.abort(),i);try{let c=yield fetch(t,M(I({},e),{signal:s.signal,redirect:"follow"}));return clearTimeout(r),c}catch(c){throw clearTimeout(r),c.name==="AbortError"?new Error(`Request timeout after ${i}ms`):c}})}function A(t){return t?t.toLowerCase().replace(/[^a-z0-9\s]/g,"").replace(/\s+/g," ").trim():""}function _(t){return t?t.toLowerCase().split(" ").map(function(e){return e.charAt(0).toUpperCase()+e.slice(1)}).join(" "):""}function F(t){return t?t.toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-+|-+$/g,""):""}function H(t,e){let i=A(t),n=A(e);if(i===n)return 1;if(i.length>5&&n.length>5&&(n.includes(i)||i.includes(n)))return .9;let s=new Set(i.split(/\s+/).filter(h=>h.length>2)),r=new Set(n.split(/\s+/).filter(h=>h.length>2));if(s.size===0||r.size===0)return 0;let c=new Set([...s].filter(h=>r.has(h))),o=new Set([...s,...r]);return c.size/o.size}function q(t,e,i,n){for(;i--;)if(n[i]){let s=i.toString(e);t=t.replace(new RegExp("\\b"+s+"\\b","g"),n[i])}return t}function G(t,e){if(!e||e.length===0)return null;let i=t.year?parseInt(t.year):null,n=null,s=0;for(let r of e){let c=H(t.title,r.title);if(i){if(r.title.includes(i.toString()))c+=.2;else if(r.title.match(/\(\d{4}\)/)){let o=r.title.match(/\((\d{4})\)/);o&&parseInt(o[1])!==i&&(c-=.1)}}c>s&&(s=c,n=r)}return n&&s>.45?(console.log(`[Isaidub] Best match: "${n.title}" (score: ${s.toFixed(2)})`),n):null}function K(t,e){let i=e.quality||"Unknown",n=_(t.title||"Unknown"),s=t.year||"",r=e.size||"";if(!r){let l=e.text?e.text.match(/(\d+(?:\.\d+)?\s*(?:GB|MB))/i):null;l&&(r=l[1])}let c="",o=((e.text||"")+" "+(e.url||"")).toLowerCase();o.includes("bluray")||o.includes("brrip")?c="BluRay":o.includes("web-dl")?c="WEB-DL":o.includes("webrip")?c="WEBRip":o.includes("hdrip")?c="HDRip":o.includes("dvdrip")?c="DVDRip":o.includes("bdrip")?c="BDRip":o.includes("hdtv")&&(c="HDTV");let h="",a=o.match(/season\s*(\d+)/i),p=o.match(/epi\s*(\d+)|episode\s*(\d+)/i);if(a&&(h+=` S${a[1].padStart(2,"0")}`),p&&(h+=` E${(p[1]||p[2]).padStart(2,"0")}`),!h){let l=o.match(/s(\d+)e(\d+)|s(\d+)\s*e(\d+)/i);l&&(h=` S${(l[1]||l[3]).padStart(2,"0")} E${(l[2]||l[4]).padStart(2,"0")}`)}let d=c?`\u{1F4F9}: ${c}
-`:"",g=r?`\u{1F4BE}: ${r}
-`:"",m=s&&s!=="N/A"?` ${s}`:"",u={TAMIL:/tamil/i,HINDI:/hindi/i,TELUGU:/telugu/i,MALAYALAM:/malayalam/i,KANNADA:/kannada/i,ENGLISH:/english|eng/i,"MULTI AUDIO":/multi/i},f="TAMIL";for(let[l,$]of Object.entries(u))if($.test(o)){f=l;break}return`Isaidub (Instant) (${i})
-${d}\u{1F4FC}: ${n}${m}${h} ${i}
-${g}\u{1F310}: ${f}`}function O(t,e){return w(this,null,function*(){let n=`${z}/${e==="movie"?"movie":"tv"}/${t}?api_key=${R}`;try{let s=yield v(n,{},8e3);if(!s.ok)throw new Error(`HTTP ${s.status}`);let r=yield s.json(),c={title:r.title||r.name,year:(r.release_date||r.first_air_date||"").split("-")[0]};return console.log(`[Isaidub] TMDB Info: "${c.title}" (${c.year||"N/A"})`),c}catch(s){throw console.error("[Isaidub] Error fetching TMDB metadata:",s.message),s}})}function Y(t,e){return w(this,null,function*(){let n=`${z}/search/${e==="movie"?"movie":"tv"}?api_key=${R}&query=${encodeURIComponent(t)}`;try{console.log(`[Isaidub] Searching TMDB for: "${t}"`);let s=yield v(n,{},8e3);if(!s.ok)throw new Error(`HTTP ${s.status}`);let r=yield s.json();if(r.results&&r.results.length>0){let c=r.results[0],o={title:c.title||c.name,year:(c.release_date||c.first_air_date||"").split("-")[0]};return console.log(`[Isaidub] TMDB Search Result: "${o.title}" (${o.year||"N/A"})`),o}return console.log(`[Isaidub] No TMDB results found for "${t}"`),null}catch(s){return console.error("[Isaidub] Error searching TMDB:",s.message),null}})}function j(t,e=null,i){return w(this,null,function*(){if(!e){let n=t.match(/\b(19|20)\d{2}\b/);n&&(e=n[0],t=t.replace(e,"").trim())}console.log(`[Isaidub] Searching for: "${t}" (year: ${e||"any"}, type: ${i})`);try{let n=[],s=F(t);if(s){let h=i==="tv"?["-tamil-dubbed-web-series"]:["-tamil-dubbed-movie"],a=[];for(let g of h)e&&(a.push(`${s}-${e}${g}`),a.push(`${s}-720p-hd${g}`)),a.push(`${s}${g}`),a.push(`${s}-720p-hd${g}`);console.log(`[Isaidub] Trying ${a.length} guessed slugs...`);let p=a.map(g=>w(this,null,function*(){let m=`${b}/movie/${g}/`;try{if((yield v(m,{method:"HEAD",headers:x},4e3)).ok)return{title:t+(e?` (${e})`:""),href:m,isGuessed:!0}}catch(u){}return null})),d=(yield Promise.all(p)).filter(g=>g!==null);n.push(...d)}let r=[];if(r.push(`${b}/`),i==="tv")r.push(`${b}/tamil-dubbed-web-series/`),r.push(`${b}/tamil-dubbed-web-series/2/`);else{e&&r.push(`${b}/tamil-${e}-dubbed-movies/`);let h=new Date().getFullYear();for(let p=h;p>=h-1;p--){let d=`${b}/tamil-${p}-dubbed-movies/`;r.includes(d)||(r.push(d),r.push(`${d}2/`))}let a=t.trim().charAt(0).toLowerCase();/[a-z]/.test(a)&&(r.push(`${b}/tamil-atoz-dubbed-movies/${a}/`),r.push(`${b}/tamil-atoz-dubbed-movies/${a}/2/`))}console.log(`[Isaidub] Checking ${r.length} potential category pages in parallel...`);let c=r.map(h=>w(this,null,function*(){try{let a=yield v(h,{headers:x},6e3);if(!a.ok)return[];let p=yield a.text(),d=k.load(p),g=[];return d("a").each((m,u)=>{let f=d(u).attr("href"),l=d(u).text().trim();if(!(!f||f==="/"||f==="#"||l.length<3&&!d(u).find("img").length)&&(l.length<3&&(l=d(u).find("img").attr("alt")||"",l=l.replace(/isaiDub\.me\s*-\s*/i,"").trim()),l=l.replace(/Download Now/i,"").replace(/\s+/g," ").trim(),f.includes("/movie/")||f.includes("-dubbed-movie")||f.includes("-dubbed-web-series"))){if(f.includes("/genre/")||f.match(/\/\d+\/$/)||f.endsWith("-movies/"))return;let $=f.startsWith("http")?f:`${b}${f}`;g.push({title:l,href:$})}}),g}catch(a){return[]}})),o=yield Promise.all(c);for(let h of o)for(let a of h)n.some(p=>p.href===a.href)||n.push(a);return console.log(`[Isaidub] Found ${n.length} total unique links`),n}catch(n){return console.error("[Isaidub] Search error:",n.message),[]}})}function V(t,e){return w(this,null,function*(){try{let i=new URL(t).origin,n=yield v(t,{headers:M(I({},x),{Referer:b})},8e3);if((n.headers.get("content-type")||"").includes("video/"))return console.log(`[Isaidub] Direct video response from generic embed: ${n.url}`),n.url;let r=yield n.text(),c=k.load(r),o=[];if(c("video source, video").each((m,u)=>{let f=c(u).attr("src");f&&o.push(f)}),o.length>0)return o[0];let h=r.match(/https?:\/\/[^\s"']+\.m3u8[^\s"']*/i);if(h)return h[0];let a=c('a:contains("Watch Online"), a:contains("Stream"), a:contains("Server")').attr("href");if(a){let m=a.startsWith("http")?a:a.startsWith("//")?"https:"+a:i+a;if(m!==t&&!m.includes("ads"))return yield T(m)}let p=r.match(new RegExp("eval\\(function\\(p,a,c,k,e,d\\)\\{.*?\\}\\s*\\((.*)\\)\\s*\\)","s"));if(p){let u=p[1].trim().match(new RegExp("^'(.*)',\\s*(\\d+),\\s*(\\d+),\\s*'(.*?)'\\.split\\(","s"));if(u){let f=q(u[1],parseInt(u[2]),parseInt(u[3]),u[4].split("|"));r+=`
-`+f}}let d=[/["']hls[2-4]["']\s*:\s*["']([^"']+)["']/gi,/sources\s*:\s*\[\s*{\s*file\s*:\s*["']([^"']+)["']/gi,/https?:\/\/[^\s"']+\.m3u8[^\s"']*/gi,/["'](\/[^\s"']+\.m3u8[^\s"']*)["']/gi,/https?:\/\/[^\s"']+\.mp4[^\s"']*/gi,/(?:source|file|src)\s*[:=]\s*["']([^"']+\.(?:m3u8|mp4)[^"']*)["']/gi],g=[];for(let m of d){let u=r.match(m);if(u)for(let f of u){let l=f,$=f.match(/["']:[ ]*["']([^"']+)["']/);if($)l=$[1];else{let S=f.match(/["']([^"']+)["']/);S&&(l=S[1])}let y=l.match(/https?:\/\/[^\s"']+/);y&&(l=y[0]),l=l.replace(/[\\"'\)\]]+$/,""),!(!l||l.length<5||l.includes("google.com")||l.includes("youtube.com"))&&(l.startsWith("/")&&!l.startsWith("//")&&(l=i+l),g.push(l))}}return g.length>0?(g.sort((m,u)=>{let f=m.toLowerCase().includes(".m3u8"),l=u.toLowerCase().includes(".m3u8");return f!==l?l?1:-1:m.length-u.length}),g[0]):null}catch(i){return null}})}function T(i){return w(this,arguments,function*(t,e=new Set){if(e.has(t)||(e.add(t),e.size>5))return null;try{console.log(`[Isaidub] Extracting from embed: ${t}`);let s=new URL(t).hostname.toLowerCase();return s.includes("onestream.watch")||s.includes("dubmv.top")||s.includes("dubshare.one")||s.includes("uptodub.ch")?yield J(t,e):yield V(t,s)}catch(n){return null}})}function J(i){return w(this,arguments,function*(t,e=new Set){console.log(`[Isaidub] Extracting from stream page: ${t}`);try{let n=yield v(t,{headers:M(I({},x),{Referer:b})},12e3);if((n.headers.get("content-type")||"").includes("video/"))return console.log(`[Isaidub] Found direct video source via redirect: ${n.url}`),n.url;let r=yield n.text(),c=k.load(r),o=[];if(c("video source, video").each((d,g)=>{let m=c(g).attr("src");m&&o.push(m)}),o.length>0)return o[0];let h=r.match(/https?:\/\/[^\s"']+\.m3u8[^\s"']*/i);if(h)return h[0];let a=r.match(/https?:\/\/[^\s"']+\.mp4[^\s"']*/i);if(a)return a[0];let p=c('a:contains("Watch Online"), a:contains("Stream"), a:contains("Server")').attr("href");if(p){let d=p.startsWith("http")?p:new URL(t).origin+p;if(d!==t&&!d.includes("ads"))return yield T(d,e)}return null}catch(n){return null}})}function B(t,e=0,i="",n=null,s=null){return w(this,null,function*(){if(e>5)return[];console.log(`[Isaidub] Parsing page (depth ${e}, S: ${n||"any"}, E: ${s||"any"}): ${t}`);try{let c=yield(yield v(t,{headers:x},8e3)).text(),o=k.load(c),h=o("title").text().trim()||"",a=(i+" "+h).trim(),p=[];if(o("a").each((g,m)=>{let u=o(m).attr("href"),f=o(m).text().trim();if(u&&u.includes("/download/page/")){if(n){let S=(a+" "+f).match(/(?:season|s)\s*0*(\d+)\b/i);if(S&&parseInt(S[1])!==parseInt(n))return}if(s){let S=new RegExp(`(?:epi|episode|e)\\s*0*${s}\\b`,"i");if(!S.test(f)&&!S.test(a))return}let l=u.startsWith("http")?u:`${b}${u}`,$=f.match(/\b(360p|480p|720p|1080p|4K)\b/i),y=$?$[0]:"HD";p.push({url:l,quality:y,type:"download",text:(a+" "+f).trim()})}}),p.length>0)return console.log(`[Isaidub] Found ${p.length} download links`),p;let d=[];if(o("a").each((g,m)=>{let u=o(m).attr("href"),f=o(m).text().trim().toLowerCase();if(!u||u==="/"||u==="#"||!u.includes("/movie/")&&!u.match(/\/\d+\/$/))return;let l=["360p","480p","720p","1080p","4K","hd","dvd","scr","rip","bluray","brrip","web","webrip","original","season","episode","epi"],$=!1;for(let y of l)if(f.includes(y)){$=!0;break}if(!$&&f.match(/\d+x\d+/)&&($=!0),$){if(n){let S=f.match(/season\s*(\d+)/i);if(S&&parseInt(S[1])!==parseInt(n))return}let y=u.startsWith("http")?u:`${b}${u}`;d.push({url:y,text:o(m).text().trim()})}}),d.length>0){console.log(`[Isaidub] Found ${d.length} sub-links, following...`);let g=[];for(let m of d){let u=yield B(m.url,e+1,(a+" "+m.text).trim(),n,s);if(g.push(...u),g.length>=10)break}return g}return[]}catch(r){return[]}})}function Q(t){return w(this,null,function*(){console.log(`[Isaidub] Extracting final URL from: ${t}`);try{let i=yield(yield v(t,{headers:x},1e4)).text(),n=k.load(i),s=null,r=i.match(/File Size:<\/strong>\s*([^<]+)/i);r&&(s=r[1].trim());let c=[];if(n("a").each((o,h)=>{let a=n(h).attr("href"),p=n(h).text().trim().toLowerCase();if(a&&!a.includes("isaidub.love")&&!a.startsWith("#")&&(p.includes("download")||p.includes("server")||a.includes("dubmv.top")||a.includes("onestream.watch"))){let d=a.startsWith("http")?a:`https:${a}`;c.push(d)}}),c.length>0){let o=c[0],h=o.includes("dubmv.top/")||o.includes("onestream.watch/")||o.includes("uptodub.ch/");return{url:o,needsExtraction:h,size:s}}return null}catch(e){return null}})}function D(t,e,i,n){return w(this,null,function*(){e==="movie"&&(i=null,n=null),console.log(`[Isaidub] Processing ${e} ${t} (S:${i}, E:${n})`);try{let s;if(/^\d+$/.test(t))try{s=yield O(t,e)}catch(d){s={title:t,year:null}}else try{s=(yield Y(t,e))||{title:t,year:null}}catch(d){s={title:t,year:null}}let c=yield j(s.title,s.year,e),o=G(s,c);if(!o)return console.warn("[Isaidub] No matching title found"),[];let h=yield B(o.href,0,"",i,n);if(h.length===0)return[];let a=h.slice(0,10);console.log(`[Isaidub] Extracting streams from ${a.length} links in batches...`);let p=[];for(let d=0;d<a.length;d+=3){let g=a.slice(d,d+3),m=yield Promise.all(g.map(u=>w(this,null,function*(){let f;try{return yield Promise.race([w(this,null,function*(){let l=u.url,$=null;if(u.type==="download"){let y=yield Q(u.url);if(!y)return null;if($=y.size,y.needsExtraction){let S=yield T(y.url);if(!S)return null;l=S}else l=y.url}return{name:"Isaidub",title:K(s,M(I({},u),{size:$})),url:l,quality:u.quality,headers:{Referer:b,"User-Agent":x["User-Agent"]},provider:"Isaidub"}}),new Promise((l,$)=>{f=setTimeout(()=>$(new Error("Timeout")),3e4)})]).finally(()=>{f&&clearTimeout(f)})}catch(l){return console.warn(`[Isaidub] Extraction failed for ${u.url}: ${l.message}`),null}})));if(p.push(...m.filter(u=>u!==null)),p.length>=5)break}return console.log(`[Isaidub] Found ${p.length} final streamable links`),p}catch(s){return[]}})}typeof module!="undefined"&&module.exports?module.exports={getStreams:D}:global.getStreams={getStreams:D};
+// Isaidub Scraper for Nuvio Local Scrapers
+// React Native compatible version - FIXED v3
+// Stream host: dub.onestream.today → dubshare.one
+const cheerio = require('cheerio-without-node-native');
+const TMDB_API_KEY = '1b3113663c9004682ed61086cf967c44';
+const TMDB_BASE_URL = 'https://api.themoviedb.org/3';
+let MAIN_URL = "https://isaidub.love";
+const HEADERS = {
+ "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like  "Referer": `${MAIN_URL}/`,
+};
+// =================================================================================
+// UTILITY FUNCTIONS
+// =================================================================================
+async function fetchWithTimeout(url, options = {}, timeout = 10000) {
+ const controller = new AbortController();
+ const timeoutId = setTimeout(() => controller.abort(), timeout);
+ try {
+ const response = await fetch(url, { ...options, signal: controller.signal, redirect:  clearTimeout(timeoutId);
+ return response;
+ } catch (error) {
+ clearTimeout(timeoutId);
+ if (error.name === 'AbortError') throw new Error(`Request timeout after ${timeout}ms` throw error;
+ }
+}
+function normalizeTitle(title) {
+ if (!title) return '';
+ return title.toLowerCase().replace(/[^a-z0-9\s]/g, '').replace(/\s+/g, ' ').trim();
+}
+function toTitleCase(str) {
+ if (!str) return '';
+ return str.toLowerCase().split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join}
+function toSlug(str) {
+ if (!str) return '';
+ return str.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+}
+function calculateTitleSimilarity(title1, title2) {
+ const norm1 = normalizeTitle(title1);
+ const norm2 = normalizeTitle(title2);
+ if (norm1 === norm2) return 1.0;
+ if (norm1.length > 5 && norm2.length > 5 && (norm2.includes(norm1) || norm1.includes(norm const words1 = new Set(norm1.split(/\s+/).filter(w => w.length > 2));
+ const words2 = new Set(norm2.split(/\s+/).filter(w => w.length > 2));
+ if (words1.size === 0 || words2.size === 0) return 0;
+ const intersection = new Set([...words1].filter(w => words2.has(w)));
+ const union = new Set([...words1, ...words2]);
+ return intersection.size / union.size;
+}
+function unpack(p, a, c, k) {
+ while (c--) {
+ if (k[c]) p = p.replace(new RegExp('\\b' + c.toString(a) + '\\b', 'g'), k[c]);
+ }
+ return p;
+}
+function findBestTitleMatch(mediaInfo, searchResults) {
+ if (!searchResults || searchResults.length === 0) return null;
+ const targetYear = mediaInfo.year ? parseInt(mediaInfo.year) : null;
+ let bestMatch = null, bestScore = 0;
+ for (const result of searchResults) {
+ let score = calculateTitleSimilarity(mediaInfo.title, result.title);
+ if (targetYear) {
+ if (result.title.includes(targetYear.toString())) score += 0.2;
+ else if (result.title.match(/\(\d{4}\)/)) {
+ const m = result.title.match(/\((\d{4})\)/);
+ if (m && parseInt(m[1]) !== targetYear) score -= 0.1;
+ }
+ }
+ if (score > bestScore) { bestScore = score; bestMatch = result; }
+ }
+ if (bestMatch && bestScore > 0.45) {
+ console.log(`[Isaidub] Best match: "${bestMatch.title}" (score: ${bestScore.toFixed(2 return bestMatch;
+ }
+ return null;
+}
+function formatStreamTitle(mediaInfo, stream) {
+ const quality = stream.quality || "Unknown";
+ const title = toTitleCase(mediaInfo.title || "Unknown");
+ const year = mediaInfo.year || "";
+ let size = stream.size || "";
+ if (!size) {
+ const sizeMatch = stream.text ? stream.text.match(/(\d+(?:\.\d+)?\s*(?:GB|MB))/i) : n if (sizeMatch) size = sizeMatch[1];
+ }
+ let type = "";
+ const searchString = ((stream.text || "") + " " + (stream.url || "")).toLowerCase();
+ if (searchString.includes('bluray') || searchString.includes('brrip')) type = "BluRay";
+ else if (searchString.includes('web-dl')) type = "WEB-DL";
+ else if (searchString.includes('webrip')) type = "WEBRip";
+ else if (searchString.includes('hdrip')) type = "HDRip";
+ else if (searchString.includes('dvdrip')) type = "DVDRip";
+ else if (searchString.includes('bdrip')) type = "BDRip";
+ else if (searchString.includes('hdtv')) type = "HDTV";
+ let seInfo = "";
+ const sMatch = searchString.match(/season\s*(\d+)/i);
+ const eMatch = searchString.match(/epi\s*(\d+)|episode\s*(\d+)/i);
+ if (sMatch) seInfo += ` S${sMatch[1].padStart(2, '0')}`;
+ if (eMatch) seInfo += ` E${(eMatch[1] || eMatch[2]).padStart(2, '0')}`;
+ if (!seInfo) {
+ const sp = searchString.match(/s(\d+)e(\d+)|s(\d+)\s*e(\d+)/i);
+ if (sp) seInfo = ` S${(sp[1] || sp[3]).padStart(2, '0')} E${(sp[2] || sp[4]).padStart }
+ const typeLine = type ? ` : ${type}\n` : "";
+ const sizeLine = size ? ` : ${size}\n` : "";
+ const yearStr = year && year !== "N/A" ? ` ${year}` : "";
+ const langMarkers = {
+ 'TAMIL': /tamil/i, 'HINDI': /hindi/i, 'TELUGU': /telugu/i,
+ 'MALAYALAM': /malayalam/i, 'KANNADA': /kannada/i,
+ 'ENGLISH': /english|eng/i, 'MULTI AUDIO': /multi/i
+ };
+ let language = "TAMIL";
+ for (const [name, regex] of Object.entries(langMarkers)) {
+ if (regex.test(searchString)) { language = name; break; }
+ }
+ return `Isaidub (Instant) (${quality})\n${typeLine} : ${title}${yearStr}${seInfo} ${qual}
+// =================================================================================
+// TMDB FUNCTIONS
+// =================================================================================
+async function getTMDBDetails(tmdbId, mediaType) {
+ const type = mediaType === 'movie' ? 'movie' : 'tv';
+ const url = `${TMDB_BASE_URL}/${type}/${tmdbId}?api_key=${TMDB_API_KEY}`;
+ try {
+ const response = await fetchWithTimeout(url, {}, 8000);
+ if (!response.ok) throw new Error(`HTTP ${response.status}`);
+ const data = await response.json();
+ const info = {
+ title: data.title || data.name,
+ year: (data.release_date || data.first_air_date || "").split("-")[0]
+ };
+ console.log(`[Isaidub] TMDB Info: "${info.title}" (${info.year || 'N/A'})`);
+ return info;
+ } catch (error) {
+ console.error("[Isaidub] Error fetching TMDB metadata:", error.message);
+ throw error;
+ }
+}
+async function searchTMDBByTitle(title, mediaType) {
+ const type = mediaType === 'movie' ? 'movie' : 'tv';
+ const url = `${TMDB_BASE_URL}/search/${type}?api_key=${TMDB_API_KEY}&query=${encodeURICom try {
+ const response = await fetchWithTimeout(url, {}, 8000);
+ if (!response.ok) throw new Error(`HTTP ${response.status}`);
+ const data = await response.json();
+ if (data.results && data.results.length > 0) {
+ const r = data.results[0];
+ return {
+ title: r.title || r.name,
+ year: (r.release_date || r.first_air_date || "").split("-")[0]
+ };
+ }
+ return null;
+ } catch (error) {
+ console.error("[Isaidub] Error searching TMDB:", error.message);
+ return null;
+ }
+}
+// =================================================================================
+// SEARCH
+// =================================================================================
+async function search(query, year = null, mediaType) {
+ if (!year) {
+ const yearMatch = query.match(/\b(19|20)\d{2}\b/);
+ if (yearMatch) { year = yearMatch[0]; query = query.replace(year, '').trim(); }
+ }
+ console.log(`[Isaidub] Searching for: "${query}" (year: ${year || 'any'}, type: ${mediaTy try {
+ const results = [];
+ const slug = toSlug(query);
+ if (slug) {
+ const baseSuffixes = mediaType === 'tv'
+ ? ['-tamil-dubbed-web-series']
+ : ['-tamil-dubbed-movie'];
+ const guesses = [];
+ for (const suffix of baseSuffixes) {
+ if (year) {
+ guesses.push(`${slug}-${year}${suffix}`);
+ guesses.push(`${slug}-720p-hd${suffix}`);
+ }
+ guesses.push(`${slug}${suffix}`);
+ guesses.push(`${slug}-720p-hd${suffix}`);
+ }
+ const guessPromises = guesses.map(async (guess) => {
+ const guessUrl = `${MAIN_URL}/movie/${guess}/`;
+ try {
+ const response = await fetchWithTimeout(guessUrl, { method: 'HEAD', heade if (response.ok) return { title: query + (year ? ` (${year})` : ""), href } catch (e) { }
+ return null;
+ });
+ const guessedResults = (await Promise.all(guessPromises)).filter(r => r !== null) results.push(...guessedResults);
+ }
+ const categoriesToCheck = [`${MAIN_URL}/`];
+ if (mediaType === 'tv') {
+ categoriesToCheck.push(`${MAIN_URL}/tamil-dubbed-web-series/`);
+ categoriesToCheck.push(`${MAIN_URL}/tamil-dubbed-web-series/2/`);
+ } else {
+ if (year) categoriesToCheck.push(`${MAIN_URL}/tamil-${year}-dubbed-movies/`);
+ const currentYear = new Date().getFullYear();
+ for (let y = currentYear; y >= currentYear - 1; y--) {
+ const yearUrl = `${MAIN_URL}/tamil-${y}-dubbed-movies/`;
+ if (!categoriesToCheck.includes(yearUrl)) {
+ categoriesToCheck.push(yearUrl);
+ categoriesToCheck.push(`${yearUrl}2/`);
+ }
+ }
+ const firstChar = query.trim().charAt(0).toLowerCase();
+ if (/[a-z]/.test(firstChar)) {
+ categoriesToCheck.push(`${MAIN_URL}/tamil-atoz-dubbed-movies/${firstChar}/`);
+ categoriesToCheck.push(`${MAIN_URL}/tamil-atoz-dubbed-movies/${firstChar}/2/`
+ }
+ }
+ const catPromises = categoriesToCheck.map(async (categoryUrl) => {
+ try {
+ const response = await fetchWithTimeout(categoryUrl, { headers: HEADERS }, 60 if (!response.ok) return [];
+ const html = await response.text();
+ const $ = cheerio.load(html);
+ const pageResults = [];
+ $('a').each((i, el) => {
+ const href = $(el).attr('href');
+ let text = $(el).text().trim();
+ if (!href || href === '/' || href === '#' || (text.length < 3 && !$(el).f if (text.length < 3) {
+ text = $(el).find('img').attr('alt') || "";
+ text = text.replace(/isaiDub\.me\s*-\s*/i, '').trim();
+ }
+ text = text.replace(/Download Now/i, '').replace(/\s+/g, ' ').trim();
+ if (href.includes('/movie/') || href.includes('-dubbed-movie') || href.in if (href.includes('/genre/') || href.match(/\/\d+\/$/) || href.endsWi const fullUrl = href.startsWith('http') ? href : `${MAIN_URL}${href}` pageResults.push({ title: text, href: fullUrl });
+ }
+ });
+ return pageResults;
+ } catch (error) { return []; }
+ });
+ const allCatResults = await Promise.all(catPromises);
+ for (const catResults of allCatResults) {
+ for (const res of catResults) {
+ if (!results.some(r => r.href === res.href)) results.push(res);
+ }
+ }
+ console.log(`[Isaidub] Found ${results.length} total unique links`);
+ return results;
+ } catch (error) {
+ console.error("[Isaidub] Search error:", error.message);
+ return [];
+ }
+}
+// =================================================================================
+// KEY FIX: extractFromOnestreamPage
+// Directly hits dub.onestream.today and extracts the dubshare.one mp4 URL
+// This SKIPS all ad redirects entirely using the known ID pattern
+// =================================================================================
+async function extractFromOnestreamPage(streamId) {
+ const streamUrl = `https://dub.onestream.today/stream/video/${streamId}`;
+ console.log(`[Isaidub] Hitting onestream directly: ${streamUrl}`);
+ try {
+ const response = await fetchWithTimeout(streamUrl, {
+ headers: {
+ ...HEADERS,
+ 'Referer': 'https://dubpage.xyz/',
+ 'Origin': 'https://dubpage.xyz'
+ }
+ }, 15000);
+ let html = await response.text();
+ // Try unpacking obfuscated JS first
+ const packerMatch = html.match(/eval\(function\(p,a,c,k,e,d\)\{.*?\}\s*\((.*)\)\s*\)/ if (packerMatch) {
+ try {
+ const rawArgs = packerMatch[1].trim();
+ const pMatch = rawArgs.match(/^'(.*)',\s*(\d+),\s*(\d+),\s*'(.*?)'\.split\(/s if (pMatch) {
+ const unpacked = unpack(pMatch[1], parseInt(pMatch[2]), parseInt(pMatch[3 html += "\n" + unpacked;
+ console.log(`[Isaidub] Successfully unpacked JS`);
+ }
+ } catch (e) { }
+ }
+ // Pattern 1: dubshare.one .mp4 URL (confirmed from network analysis)
+ const dubshareMatch = html.match(/https?:\/\/[^\s"'<>\\]*dubshare\.one[^\s"'<>\\]*\.m if (dubshareMatch) {
+ console.log(`[Isaidub] Found dubshare.one URL: ${dubshareMatch[0]}`);
+ return dubshareMatch[0];
+ }
+ // Pattern 2: Any .mp4 with ?stream=1 parameter (confirmed pattern)
+ const streamParamMatch = html.match(/https?:\/\/[^\s"'<>\\]+\.mp4\?stream=1/i);
+ if (streamParamMatch) {
+ console.log(`[Isaidub] Found stream URL: ${streamParamMatch[0]}`);
+ return streamParamMatch[0];
+ }
+ // Pattern 3: Broad .mp4 URL scan
+ const mp4Match = html.match(/https?:\/\/[^\s"'<>\\]+\.mp4[^\s"'<>\\]*/i);
+ if (mp4Match) {
+ console.log(`[Isaidub] Found mp4 URL: ${mp4Match[0]}`);
+ return mp4Match[0];
+ }
+ // Pattern 4: .m3u8 URL scan
+ const m3u8Match = html.match(/https?:\/\/[^\s"'<>\\]+\.m3u8[^\s"'<>\\]*/i);
+ if (m3u8Match) {
+ console.log(`[Isaidub] Found m3u8 URL: ${m3u8Match[0]}`);
+ return m3u8Match[0];
+ }
+ // Pattern 5: file/src/source in JS objects
+ const jsPatterns = [
+ /["']?file["']?\s*:\s*["']([^"']+\.mp4[^"']*)["']/i,
+ /["']?src["']?\s*:\s*["']([^"']+\.mp4[^"']*)["']/i,
+ /["']?source["']?\s*:\s*["']([^"']+\.mp4[^"']*)["']/i,
+ /["']?file["']?\s*:\s*["']([^"']+\.m3u8[^"']*)["']/i,
+ ];
+ for (const pattern of jsPatterns) {
+ const match = html.match(pattern);
+ if (match && match[1]) {
+ console.log(`[Isaidub] Found via JS pattern: ${match[1]}`);
+ return match[1];
+ }
+ }
+ // Pattern 6: Check <video> tag src
+ const $ = cheerio.load(html);
+ const videoSrc = $('video source[src], video[src]').first().attr('src');
+ if (videoSrc) {
+ console.log(`[Isaidub] Found video src tag: ${videoSrc}`);
+ return videoSrc;
+ }
+ console.warn(`[Isaidub] Could not extract stream from onestream page: ${streamUrl}`);
+ return null;
+ } catch (error) {
+ console.error(`[Isaidub] extractFromOnestreamPage error: ${error.message}`);
+ return null;
+ }
+}
+// =================================================================================
+// parseMoviePage — extracts download page IDs
+// =================================================================================
+async function parseMoviePage(url, depth = 0, contextText = "", season = null, episode = null if (depth > 5) return [];
+ console.log(`[Isaidub] Parsing page (depth ${depth}): ${url}`);
+ try {
+ const response = await fetchWithTimeout(url, { headers: HEADERS }, 8000);
+ const html = await response.text();
+ const $ = cheerio.load(html);
+ const pageTitle = $('title').text().trim() || "";
+ const combinedContext = (contextText + " " + pageTitle).trim();
+ const downloadLinks = [];
+ $('a').each((i, el) => {
+ const href = $(el).attr('href');
+ const text = $(el).text().trim();
+ if (!href) return;
+ const isDownloadLink =
+ href.includes('/download/page/') ||
+ href.includes('/download/') ||
+ href.includes('dubpage.xyz') ||
+ href.includes('dubmv.top') ||
+ href.includes('onestream') ||
+ href.includes('dubshare');
+ if (!isDownloadLink) return;
+ if (season) {
+ const otherSeasonMatch = (combinedContext + " " + text).match(/(?:season|s)\s if (otherSeasonMatch && parseInt(otherSeasonMatch[1]) !== parseInt(season)) r }
+ if (episode) {
+ const ePattern = new RegExp(`(?:epi|episode|e)\\s*0*${episode}\\b`, 'i');
+ if (!ePattern.test(text) && !ePattern.test(combinedContext)) return;
+ }
+ const fullUrl = href.startsWith('http') ? href
+ : href.startsWith('//') ? 'https:' + href
+ : `${MAIN_URL}${href}`;
+ const qualityMatch = (text + " " + href + " " + combinedContext).match(/\b(360p|4 const quality = qualityMatch ? qualityMatch[0] : "HD";
+ // Only 720p and 1080p
+ if (quality === '360p' || quality === '480p') return;
+ downloadLinks.push({
+ url: fullUrl,
+ quality,
+ type: "download",
+ text: (combinedContext + " " + text).trim()
+ });
+ });
+ if (downloadLinks.length > 0) {
+ console.log(`[Isaidub] Found ${downloadLinks.length} download links`);
+ return downloadLinks;
+ }
+ // Follow quality sub-links
+ const subLinks = [];
+ $('a').each((i, el) => {
+ const href = $(el).attr('href');
+ const text = $(el).text().trim().toLowerCase();
+ if (!href || href === '/' || href === '#') return;
+ const isQualityLink = /360p|480p|720p|1080p|4k|hd|dvd|scr|rip|bluray|brrip|web|we if (!isQualityLink) return;
+ if (season) {
+ const sMatch = text.match(/season\s*(\d+)/i);
+ if (sMatch && parseInt(sMatch[1]) !== parseInt(season)) return;
+ }
+ const fullUrl = href.startsWith('http') ? href
+ : href.startsWith('//') ? 'https:' + href
+ : `${MAIN_URL}${href}`;
+ subLinks.push({ url: fullUrl, text: $(el).text().trim() });
+ });
+ if (subLinks.length > 0) {
+ console.log(`[Isaidub] Following ${subLinks.length} sub-links...`);
+ const streams = [];
+ for (const subLink of subLinks) {
+ const subStreams = await parseMoviePage(subLink.url, depth + 1, (combinedCont streams.push(...subStreams);
+ if (streams.length >= 10) break;
+ }
+ return streams;
+ }
+ return [];
+ } catch (error) { return []; }
+}
+// =================================================================================
+// extractFinalDownloadUrl — extracts stream ID from download page
+// then jumps straight to dub.onestream.today skipping all ads
+// =================================================================================
+async function extractFinalDownloadUrl(downloadPageUrl) {
+ console.log(`[Isaidub] Processing download page: ${downloadPageUrl}`);
+ try {
+ // Extract the numeric ID from the URL
+ // e.g. isaidub.love/download/page/39101/ → ID = 39101
+ const idMatch = downloadPageUrl.match(/\/(\d+)\/?$/);
+ if (idMatch) {
+ const streamId = idMatch[1];
+ console.log(`[Isaidub] Extracted stream ID: ${streamId}`);
+ // Jump directly to onestream, bypassing all ad redirects!
+ const directUrl = await extractFromOnestreamPage(streamId);
+ if (directUrl) {
+ return { url: directUrl, needsExtraction: false, size: null };
+ }
+ }
+ // Fallback: load the download page and look for links
+ const response = await fetchWithTimeout(downloadPageUrl, { headers: HEADERS }, 10000) const html = await response.text();
+ const $ = cheerio.load(html);
+ let size = null;
+ const sizeMatch = html.match(/File\s*Size\s*:?\s*<\/strong>\s*([^<\n]+)/i) ||
+ html.match(/Size\s*:?\s*(\d+(?:\.\d+)?\s*(?:GB|MB))/i);
+ if (sizeMatch) size = sizeMatch[1].trim();
+ // Look for dubpage/dubmv/onestream links
+ const downloadLinks = [];
+ $('a').each((i, el) => {
+ const href = $(el).attr('href');
+ const text = $(el).text().trim().toLowerCase();
+ if (!href || href.startsWith('#') || href.includes('javascript:')) return;
+ if (href.includes('isaidub.love') || href.includes('isaidub.me')) return;
+ const isStreamLink =
+ text.includes('download') || text.includes('server') ||
+ text.includes('watch') || text.includes('stream') || text.includes('play') ||
+ href.includes('dubpage.xyz') || href.includes('dubmv.top') ||
+ href.includes('onestream') || href.includes('dubshare');
+ if (!isStreamLink) return;
+ const fullUrl = href.startsWith('http') ? href
+ : href.startsWith('//') ? 'https:' + href
+ : `${MAIN_URL}${href}`;
+ downloadLinks.push(fullUrl);
+ });
+ if (downloadLinks.length > 0) {
+ // Try to extract ID from any found link and use onestream directly
+ for (const link of downloadLinks) {
+ const linkIdMatch = link.match(/\/(\d+)\/?$/);
+ if (linkIdMatch) {
+ const streamId = linkIdMatch[1];
+ const directUrl = await extractFromOnestreamPage(streamId);
+ if (directUrl) return { url: directUrl, needsExtraction: false, size };
+ }
+ }
+ return { url: downloadLinks[0], needsExtraction: true, size };
+ }
+ return null;
+ } catch (error) {
+ console.error("[Isaidub] extractFinalDownloadUrl error:", error.message);
+ return null;
+ }
+}
+// =================================================================================
+// MAIN getStreams FUNCTION
+// =================================================================================
+async function getStreams(tmdbId, mediaType, season, episode) {
+ if (mediaType === 'movie') { season = null; episode = null; }
+ console.log(`[Isaidub] Processing ${mediaType} ${tmdbId} (S:${season}, E:${episode})`);
+ try {
+ let mediaInfo;
+ const isNumericId = /^\d+$/.test(tmdbId);
+ if (isNumericId) {
+ try { mediaInfo = await getTMDBDetails(tmdbId, mediaType); }
+ catch (error) { mediaInfo = { title: tmdbId, year: null }; }
+ } else {
+ try { mediaInfo = (await searchTMDBByTitle(tmdbId, mediaType)) || { title: tmdbId catch (error) { mediaInfo = { title: tmdbId, year: null }; }
+ }
+ const searchResults = await search(mediaInfo.title, mediaInfo.year, mediaType);
+ const bestMatch = findBestTitleMatch(mediaInfo, searchResults);
+ if (!bestMatch) {
+ console.warn("[Isaidub] No matching title found");
+ return [];
+ }
+ const rawStreams = await parseMoviePage(bestMatch.href, 0, "", season, episode);
+ if (rawStreams.length === 0) return [];
+ const limitedStreams = rawStreams.slice(0, 10);
+ console.log(`[Isaidub] Extracting streams from ${limitedStreams.length} links...`);
+ const finalStreams = [];
+ for (let i = 0; i < limitedStreams.length; i += 3) {
+ const batch = limitedStreams.slice(i, i + 3);
+ const batchResults = await Promise.all(batch.map(async (stream) => {
+ let timeoutId;
+ try {
+ return await Promise.race([
+ (async () => {
+ let finalUrl = stream.url;
+ let extractedSize = null;
+ if (stream.type === "download") {
+ const result = await extractFinalDownloadUrl(stream.url);
+ if (!result) return null;
+ extractedSize = result.size;
+ finalUrl = result.url;
+ }
+ if (!finalUrl || !finalUrl.startsWith('http')) {
+ console.warn(`[Isaidub] Invalid URL skipped: ${finalUrl}`);
+ return null;
+ }
+ console.log(`[Isaidub] Returning stream: ${finalUrl}`);
+ return {
+ name: "Isaidub",
+ title: formatStreamTitle(mediaInfo, { ...stream, size: extrac url: finalUrl,
+ quality: stream.quality,
+ headers: {
+ "Referer": "https://dub.onestream.today/",
+ "User-Agent": HEADERS["User-Agent"]
+ },
+ provider: 'Isaidub'
+ };
+ })(),
+ new Promise((_, reject) => {
+ timeoutId = setTimeout(() => reject(new Error('Timeout')), 30000) })
+ ]).finally(() => { if (timeoutId) clearTimeout(timeoutId); });
+ } catch (error) {
+ console.warn(`[Isaidub] Failed: ${stream.url}: ${error.message}`);
+ return null;
+ }
+ }));
+ finalStreams.push(...batchResults.filter(r => r !== null));
+ if (finalStreams.length >= 5) break;
+ }
+ console.log(`[Isaidub] Found ${finalStreams.length} final streamable links`);
+ return finalStreams;
+ } catch (error) {
+ console.error("[Isaidub] getStreams error:", error.message);
+ return [];
+ }
+}
+if (typeof module !== 'undefined' && module.exports) {
+ module.exports = { getStreams };
+} else {
+ global.getStreams = { getStreams };
+}
